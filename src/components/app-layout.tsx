@@ -1,4 +1,5 @@
-import { Link, useRouterState, type ReactNode } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
+import type { ReactNode } from "react";
 import { Moon, Sun } from "lucide-react";
 
 import { AppSidebar, navItems, secondaryItems } from "@/components/app-sidebar";
