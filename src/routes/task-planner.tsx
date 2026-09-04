@@ -94,7 +94,7 @@ function TaskPlannerPage() {
     if (!parsed.success) {
       const next: Record<string, string> = {};
       for (const issue of parsed.error.issues) next[String(issue.path[0])] = issue.message;
-      setErrors(next);
+      setErrors(next as typeof errors);
       return;
     }
     setErrors({});
