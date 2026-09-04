@@ -80,7 +80,7 @@ function EmailGeneratorPage() {
   const [tone, setTone] = useState<Tone>("professional");
   const [length, setLength] = useState<Length>("medium");
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<{ intent?: string; recipient?: string; subject?: string }>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<EmailResult | null>(null);
@@ -91,7 +91,7 @@ function EmailGeneratorPage() {
     if (!parsed.success) {
       const next: Record<string, string> = {};
       for (const issue of parsed.error.issues) next[String(issue.path[0])] = issue.message;
-      setErrors(next);
+      setErrors(next as typeof errors);
       toast.error("Please fix the highlighted fields");
       return;
     }

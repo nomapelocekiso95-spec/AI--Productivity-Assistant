@@ -83,7 +83,7 @@ function TaskPlannerPage() {
   ]);
   const [draft, setDraft] = useState(emptyDraft);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<{ name?: string; duration?: string }>({});
   const [view, setView] = useState<"daily" | "weekly">("daily");
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [loading, setLoading] = useState(false);
@@ -94,19 +94,23 @@ function TaskPlannerPage() {
     if (!parsed.success) {
       const next: Record<string, string> = {};
       for (const issue of parsed.error.issues) next[String(issue.path[0])] = issue.message;
-      setErrors(next);
+      setErrors(next as typeof errors);
       return;
     }
     setErrors({});
+    const description = draft.description.trim();
+    const deadline = draft.deadline;
+    const preferredTime = draft.preferredTime;
+    const category = draft.category.trim();
     const task: PlannerTask = {
       id: editingId ?? `t${Date.now()}`,
       name: draft.name.trim(),
-      description: draft.description.trim() || undefined,
       duration: Number(draft.duration),
       priority: draft.priority,
-      deadline: draft.deadline || undefined,
-      preferredTime: draft.preferredTime || undefined,
-      category: draft.category.trim() || undefined,
+      ...(description ? { description } : {}),
+      ...(deadline ? { deadline } : {}),
+      ...(preferredTime ? { preferredTime } : {}),
+      ...(category ? { category } : {}),
     };
     setTasks((prev) => (editingId ? prev.map((t) => (t.id === editingId ? task : t)) : [...prev, task]));
     toast.success(editingId ? "Task updated" : "Task added");

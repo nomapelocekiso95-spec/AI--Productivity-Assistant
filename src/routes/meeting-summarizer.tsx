@@ -70,7 +70,7 @@ function MeetingSummarizerPage() {
   const [date, setDate] = useState("");
   const [participants, setParticipants] = useState("");
   const [notes, setNotes] = useState("");
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<{ title?: string; notes?: string }>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<MeetingSummary | null>(null);
@@ -81,7 +81,7 @@ function MeetingSummarizerPage() {
     if (!parsed.success) {
       const next: Record<string, string> = {};
       for (const issue of parsed.error.issues) next[String(issue.path[0])] = issue.message;
-      setErrors(next);
+      setErrors(next as typeof errors);
       toast.error("Please fix the highlighted fields");
       return;
     }
