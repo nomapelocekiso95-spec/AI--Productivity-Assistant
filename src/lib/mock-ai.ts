@@ -249,28 +249,31 @@ export async function generateSchedule(
   for (const task of sorted) {
     // Find a day with room; never schedule past the working day.
     let attempts = 0;
-    while (cursors[d] + task.duration > DAY_END && attempts < days.length) {
+    while ((cursors[d] ?? DAY_END) + task.duration > DAY_END && attempts < days.length) {
       d = (d + 1) % days.length;
       attempts++;
       sinceBreak = 0;
     }
-    if (cursors[d] + task.duration > DAY_END) continue;
+    const current = days[d];
+    let cursor = cursors[d];
+    if (!current || cursor === undefined) continue;
+    if (cursor + task.duration > DAY_END) continue;
 
     if (sinceBreak >= 120) {
-      days[d].blocks.push({
-        id: `br-${d}-${cursors[d]}`,
-        start: fmt(cursors[d]),
-        end: fmt(cursors[d] + 15),
+      current.blocks.push({
+        id: `br-${d}-${cursor}`,
+        start: fmt(cursor),
+        end: fmt(cursor + 15),
         title: "Break — step away from the screen",
         emoji: "☕",
         kind: "break",
       });
-      cursors[d] += 15;
+      cursor += 15;
       sinceBreak = 0;
     }
 
-    if (cursors[d] < 12 * 60 && cursors[d] + task.duration > 12 * 60) {
-      days[d].blocks.push({
+    if (cursor < 12 * 60 && cursor + task.duration > 12 * 60) {
+      current.blocks.push({
         id: `lu-${d}`,
         start: fmt(12 * 60),
         end: fmt(12 * 60 + 45),
@@ -278,21 +281,21 @@ export async function generateSchedule(
         emoji: "🍽️",
         kind: "break",
       });
-      cursors[d] = 12 * 60 + 45;
+      cursor = 12 * 60 + 45;
       sinceBreak = 0;
     }
 
-    days[d].blocks.push({
+    current.blocks.push({
       id: `t-${task.id}`,
-      start: fmt(cursors[d]),
-      end: fmt(cursors[d] + task.duration),
+      start: fmt(cursor),
+      end: fmt(cursor + task.duration),
       title: task.name,
       emoji: emojiFor(task),
       kind: "task",
       priority: task.priority,
       taskId: task.id,
     });
-    cursors[d] += task.duration;
+    cursors[d] = cursor + task.duration;
     sinceBreak += task.duration;
     if (view === "weekly") d = (d + 1) % days.length;
   }
