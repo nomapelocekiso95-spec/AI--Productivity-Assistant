@@ -70,7 +70,7 @@ function MeetingSummarizerPage() {
   const [date, setDate] = useState("");
   const [participants, setParticipants] = useState("");
   const [notes, setNotes] = useState("");
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<{ title?: string; notes?: string }>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<MeetingSummary | null>(null);

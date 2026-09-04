@@ -80,7 +80,7 @@ function EmailGeneratorPage() {
   const [tone, setTone] = useState<Tone>("professional");
   const [length, setLength] = useState<Length>("medium");
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<{ intent?: string; recipient?: string; subject?: string }>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<EmailResult | null>(null);
